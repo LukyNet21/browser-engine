@@ -1,8 +1,12 @@
+#ifndef html_h
+#define html_h
 
 #include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <variant>
+
+struct HTMLNode;
 
 enum HTMLNodeType
 {
@@ -11,44 +15,31 @@ enum HTMLNodeType
 };
 
 using HTMLAttributes = std::unordered_map<std::string, std::string>;
+using HTMLNodes = std::vector<HTMLNode>;
 
 struct HTMLElementData
 {
   std::string tagName;
-  std::vector<HTMLNode> children = {};
+  HTMLNodes children = {};
   HTMLAttributes attributes = {};
 };
 
 using HTMLNodeData = std::variant<HTMLElementData, std::string>;
+
 
 struct HTMLNode
 {
   HTMLNodeType type;
   HTMLNodeData data;
 
-  HTMLNode createText(const std::string& text);
-  HTMLNode createElement(
+  void print(int indent = 0) const;
+
+  static HTMLNode createText(const std::string& text);
+  static HTMLNode createElement(
     const std::string& tag,
     const HTMLAttributes& attrs = {},
-    const std::vector<HTMLNode>& children = {}
+    const HTMLNodes& children = {}
   );
 };
 
-HTMLNode HTMLNode::createText(const std::string& text)
-{
-  HTMLNode node;
-  node.type = TYPE_TEXT;
-  node.data = text; 
-  return node;
-}
-
-HTMLNode HTMLNode::createElement(
-  const std::string& tag,
-  const HTMLAttributes& attrs = {},
-  const std::vector<HTMLNode>& children = {})
-{
-  HTMLNode node;
-  node.type = TYPE_ELEMENT;
-  node.data = HTMLElementData{tag, children, attrs};
-  return node;
-}
+#endif

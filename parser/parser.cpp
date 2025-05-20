@@ -27,6 +27,14 @@ bool Parser::starts_with(std::string s) {
   return true;
 }
 
+void Parser::expect(std::string s) {
+  if (starts_with(s)) {
+    pos += s.length();
+  } else {
+    throw std::runtime_error("Parser::expect: expected '" + s + "' at position " + std::to_string(pos));
+  }
+}
+
 char Parser::consume() {
   if (eof()) {
     return '\0';
@@ -43,6 +51,18 @@ char Parser::consume() {
   }
   
   return c;
+}
+
+std::string Parser::consume_while(const std::function<bool(char)>& func) {
+  std::string result;
+  while (!eof() && func(next())) {
+    result.push_back(consume());
+  }
+  return result;
+}
+
+void Parser::consume_whitespace() {
+  consume_while([](char c) { return std::isspace(static_cast<unsigned char>(c)); });
 }
 
 bool Parser::eof() {
