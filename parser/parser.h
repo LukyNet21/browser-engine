@@ -1,6 +1,3 @@
-#ifndef parser_h
-#define parser_h
-
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -31,5 +28,3 @@ protected:
   void consume_whitespace();
   bool eof();
 };
-
-#endif

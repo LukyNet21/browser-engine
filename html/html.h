@@ -1,6 +1,3 @@
-#ifndef html_h
-#define html_h
-
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -41,5 +38,3 @@ struct HTMLNode
     const HTMLNodes& children = {}
   );
 };
-
-#endif

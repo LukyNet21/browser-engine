@@ -1,6 +1,3 @@
-#ifndef html_parser_h
-#define html_parser_h
-
 #include "../parser/parser.h"
 #include "html.h"
 #include <string>
@@ -21,5 +18,3 @@ private:
   std::pair<std::string, std::string> parse_attribute();
   std::string parse_attribute_value();
 };
-
-#endif
