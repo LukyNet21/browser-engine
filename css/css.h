@@ -32,10 +32,14 @@ struct Declaration {
   Value value;
 };
 
+using Specificity = std::tuple<size_t, size_t, size_t>;
+
 struct SimpleSelector {
   std::optional<std::string> tag_name;
   std::optional<std::string> id;
   std::vector<std::string> class_names;
+
+  Specificity specificity() const;
 };
 
 using Selector = std::variant<SimpleSelector>;
