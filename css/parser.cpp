@@ -72,4 +72,97 @@ std::vector<Selector> CSSParser::parse_selectors() {
 Stylesheet CSSParser::parse() {
   Stylesheet stylesheet;
   return stylesheet;
+};
+
+std::vector<Declaration> CSSParser::parse_declarations(){
+  expect("{");
+  std::vector<Declaration> declarations;
+  while (true) {
+    consume_whitespace();
+    if (next() == '}') {
+      consume();
+      break;
+    }
+    declarations.push_back(parse_declaration());
+  }
+  return declarations;
+};
+
+Declaration CSSParser::parse_declaration() {
+  std::string name = parse_identifier();
+  consume_whitespace();
+  expect(":");
+  consume_whitespace();
+  Value value = parse_value();
+  consume_whitespace();
+  expect(";");
+
+  return {name, value};
+}
+
+Value CSSParser::parse_value() {
+  char c = next();
+  if (c >= '0' && c <= '9') {
+    return parse_length();
+  } else if (c == '#') {
+    return parse_color();
+  } else {
+    Keyword keyword;
+    keyword.name = parse_identifier();
+    return keyword;
+  }
+}
+
+Value CSSParser::parse_length() {
+  float value = parse_float();
+  Unit unit = parse_unit();
+  Length length = {value, unit};
+  return length;
+}
+
+float CSSParser::parse_float() {
+  std::string float_str = consume_while([](char c) { 
+    return (c >= '0' && c <= '9') || c == '.';
+  });
+  return std::stof(float_str);
+}
+
+Unit CSSParser::parse_unit() {
+  std::string unit_str = parse_identifier();
+  std::transform(unit_str.begin(), unit_str.end(), unit_str.begin(), 
+                 [](unsigned char c){ return std::tolower(c); });
+  
+  if (unit_str == "px") {
+    return Unit::Px;
+  } else {
+    throw std::runtime_error("Unrecognized unit: " + unit_str);
+  }
+}
+
+Value CSSParser::parse_color() {
+  expect("#");
+  
+  Color color;
+  color.r = parse_hex_pair();
+  color.g = parse_hex_pair();
+  color.b = parse_hex_pair();
+  color.a = 255;
+  
+  ColorValue colorValue = {color};
+  return colorValue;
+}
+
+uint8_t CSSParser::parse_hex_pair() {
+  if (pos + 2 > src.length()) {
+    throw std::runtime_error("Unexpected end of input in color hex value");
+  }
+  
+  std::string hex_pair = src.substr(pos, 2);
+  pos += 2;
+  
+  try {
+    return static_cast<uint8_t>(std::stoul(hex_pair, nullptr, 16));
+  } catch (const std::exception&) {
+    throw std::runtime_error("Invalid hex color value: " + hex_pair);
+  }
 }

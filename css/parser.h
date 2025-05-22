@@ -14,4 +14,11 @@ private:
   Rule parse_rule();
   std::vector<Selector> parse_selectors();
   std::vector<Declaration> parse_declarations();
+  Declaration parse_declaration();
+  Value parse_value();
+  Value parse_length();
+  float parse_float();
+  Unit parse_unit();
+  Value parse_color();
+  uint8_t parse_hex_pair();
 };
