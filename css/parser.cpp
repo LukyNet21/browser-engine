@@ -4,7 +4,8 @@
 SimpleSelector CSSParser::parse_simple_selector() {
   SimpleSelector selector;
 
-  while (!eof()) {
+  bool continue_parsing = true;
+  while (!eof() && continue_parsing) {
     switch (next()) {
     case '#':
       consume();
@@ -20,6 +21,8 @@ SimpleSelector CSSParser::parse_simple_selector() {
     default:
       if (valid_identifier_char(next())) {
         selector.tag_name = parse_identifier();
+      } else {
+        continue_parsing = false;
       }
       break;
     }
@@ -43,12 +46,23 @@ Rule CSSParser::parse_rule() {
   return rule;
 };
 
+std::vector<Rule> CSSParser::parse_rules() {
+  std::vector<Rule> rules;
+  while (true) {
+    consume_whitespace();
+    if (eof()) break;
+    rules.push_back(parse_rule());
+  }
+
+  return rules;
+}
+
 std::vector<Selector> CSSParser::parse_selectors() {
   std::vector<Selector> selectors;
   while (true) {
     selectors.push_back(parse_simple_selector());
     consume_whitespace();
-    if (next() == 'c') {
+    if (next() == ',') {
       consume();
       consume_whitespace();
     } else if (next() == '{')
@@ -71,6 +85,7 @@ std::vector<Selector> CSSParser::parse_selectors() {
 
 Stylesheet CSSParser::parse() {
   Stylesheet stylesheet;
+  stylesheet.rules = parse_rules();
   return stylesheet;
 };
 

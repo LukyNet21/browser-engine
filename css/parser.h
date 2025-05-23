@@ -12,6 +12,7 @@ private:
   std::string parse_identifier();
   bool valid_identifier_char(char c);
   Rule parse_rule();
+  std::vector<Rule> parse_rules();
   std::vector<Selector> parse_selectors();
   std::vector<Declaration> parse_declarations();
   Declaration parse_declaration();

@@ -1,5 +1,6 @@
 #include "css.h"
 #include <algorithm>
+#include <iostream>
 
 Specificity SimpleSelector::specificity() const {
   std::size_t a = id ? 1 : 0;         // ID count
@@ -100,4 +101,54 @@ StyleNode style_tree(const HTMLNode& root, const Stylesheet& stylesheet) {
   }
   
   return styled_node;
+}
+
+void Stylesheet::print() const {
+  for (size_t i = 0; i < rules.size(); i++) {
+    const Rule& rule = rules[i];
+    std::cout << "Rule #" << (i + 1) << ":" << std::endl;
+    
+    std::cout << "  Selectors: ";
+    for (const Selector& selector : rule.selectors) {
+      if (std::holds_alternative<SimpleSelector>(selector)) {
+        const SimpleSelector& simple = std::get<SimpleSelector>(selector);
+        if (simple.tag_name) {
+          std::cout << *simple.tag_name;
+        }
+        if (simple.id) {
+          std::cout << "#" << *simple.id;
+        }
+        for (const std::string& className : simple.class_names) {
+          std::cout << "." << className;
+        }
+      }
+      std::cout << " ";
+    }
+    std::cout << std::endl;
+    
+    std::cout << "  Declarations:" << std::endl;
+    for (const Declaration& decl : rule.declarations) {
+      std::cout << "    " << decl.name << ": ";
+      if (std::holds_alternative<Keyword>(decl.value)) {
+        std::cout << std::get<Keyword>(decl.value).name;
+      }
+      else if (std::holds_alternative<Length>(decl.value)) {
+        const Length& length = std::get<Length>(decl.value);
+        std::cout << length.value;
+        if (length.unit == Unit::Px) {
+          std::cout << "px";
+        }
+      }
+      else if (std::holds_alternative<ColorValue>(decl.value)) {
+        const Color& color = std::get<ColorValue>(decl.value).color;
+        std::cout << "#";
+        std::cout << std::hex << static_cast<int>(color.r);
+        std::cout << std::hex << static_cast<int>(color.g);
+        std::cout << std::hex << static_cast<int>(color.b);
+        std::cout << std::dec;
+      }
+      std::cout << std::endl;
+    }
+    std::cout << std::endl;
+  }
 }

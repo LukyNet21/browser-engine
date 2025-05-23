@@ -61,6 +61,8 @@ struct StyleNode {
 
 struct Stylesheet {
   std::vector<Rule> rules;
+  
+  void print() const;
 };
 
 bool matches_simple_selector(const HTMLNode& node, const SimpleSelector& selector);
