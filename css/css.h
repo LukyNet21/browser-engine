@@ -21,6 +21,13 @@ struct Keyword {
 struct Length {
   float value;
   Unit unit;
+
+  float to_px() const {
+    if (unit == Px) {
+      return value;
+    }
+    return 0.0f;
+  }
 };
 
 struct ColorValue {
